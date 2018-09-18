@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Favorite Movies</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" />
+  <style type="text/css">
+    button,
+    div,
+    form,
+    input {
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Movie Search</h1>
+
+    <!-- Row for buttons! -->
+    <div class="buttonRow"> </div>
+
+    <!-- This form will be where users input data about the movies -->
+    <form id="movie-form">
+      <label for="movie-input">Search for a movie</label>
+      <input type="text" id="movie-input"><br>
+
+      <!-- This button will trigger our AJAX call -->
+      <input id="find-movie" type="submit" value="Movie Search">
+    </form>
+
+    <!-- We'll be dumping our JSON contents in here -->
+    <div id="movie-view">
+      <div class="title"></div>
+      <div class="year"></div>
+      <div class="rating"></div>
+      <div class="released"></div>
+      <div class="runtime"></div>
+      <div class="genre"></div>
+      <div class="actors"></div>
+      <div class="plot"></div>
+      <div class="raitings"></div>
+      <div class="poster"></div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+
+
+      var movieList = [];
+
+
+      function displayMovieInfo() {
+        var movie = $(this).attr("data-name");
+        var queryURL = "https://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=trilogy";
+        $.ajax({
+          url: queryURL,
+          method: "GET"
+        }).then(function (response) {
+          printData(response);
+        });
+      }
+
+
+      // Function for displaying movie data
+      function renderButtons() {
+        $(".buttonRow").empty();
+
+        for (i = 0; i < movieList.length; i++) {
+          var a = $("<button>");
+          a.addClass("movie");
+          a.attr("data-name", movieList[i]);
+          a.text(movieList[i]);
+          $(".buttonRow").append(a);
+        }
+      }
+
+      // This .on("click") function will trigger the AJAX Call
+      $("#find-movie").on("click", function (event) {
+
+        //does not refresh page
+        event.preventDefault();
+
+        var movie = $("#movie-input").val().trim();
+        var queryURL = "https://www.omdbapi.com/?t=" + movie + "&y=&plot=short&apikey=trilogy";
+
+        $.ajax({
+          url: queryURL,
+          method: "GET"
+        }).then(function (response) {
+          printData(response);
+          movieList.push(movie);
+          renderButtons();
+        });
+      });
+
+
+      function printData(response) {
+        $(".title").html("<h1> " + response.Title + " </h1>");
+        $(".year").html("Year: " + response.Year);
+        $(".released").html("Released: " + response.Released);
+        $(".runtime").html("Run Time: " + response.Runtime);
+        $(".genre").html("Genre: " + response.Genre);
+        $(".actors").html("Actors: " + response.Actors);
+        $(".plot").html("Plot: " + response.Plot);
+        $(".raitings").html("Raiting Rotten Tomatoes: " + response.Ratings[1].Value);
+        $(".poster").html("<img src=" + response.Poster + "/>");
+
+      }
+
+
+      $(document).on("click", ".movie", displayMovieInfo);
+      renderButtons();
+
+
+
+    </script>
+  </div>
+</body>
+
+</html>
