@@ -99,6 +99,7 @@
 
 
       function printData(response) {
+        $("input[type=text], textarea").val("");
         $(".title").html("<h1> " + response.Title + " </h1>");
         $(".year").html("Year: " + response.Year);
         $(".released").html("Released: " + response.Released);
